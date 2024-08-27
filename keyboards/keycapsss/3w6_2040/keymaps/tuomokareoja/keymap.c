@@ -6,8 +6,9 @@
 enum layers {
     _BASE = 0,
     _NAV,
-    _MOUSE,
     _SYM,
+    _NUM,
+    _MOUSE,
     _FUNC,
     _MEDIA,
     _GAME,
@@ -82,13 +83,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
                 SEND_STRING(SS_RCTL(SS_TAP(X_DEL)));
             }
             break;
-        // if the slash key is held down, it will act as windows backslash
-        case LT(_BASE, KC_SLSH):
-            if (!record->tap.count && record->event.pressed) {
-                tap_code16(KC_BSLS);
-            }
-            return true;
-        // modify the behaviour of the l_gui key to put out the right tap code
+       // modify the behaviour of the l_gui key to put out the right tap code
         case RGUI_T(KC_COLN):
             if (record->event.pressed) {
                 if (mod_state && MOD_MASK_SHIFT) {
@@ -109,31 +104,20 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     return true;
 };
 
-// // Define RGB color switching
-// void set_rgblight_by_layer(uint32_t layer) {
-//     switch (layer) {
-//         case _GAME:
-//             rgblight_setrgb(RGB_RED);
-//             break;
-//         case _GAMESWAP:
-//             rgblight_setrgb(RGB_YELLOW);
-//             break;
-//         default:
-//             rgblight_setrgb(RGB_BLUE);
-//             break;
-//     }
-// };
-
 // Define tapping terms per key
 uint16_t get_tapping_term(uint16_t keycode, keyrecord_t *record) {
     switch (keycode) {
-        // the "shift" keys have infinite tapping term meaning that there
+        // the thumb keys have infinite tapping term meaning that there
         // is no way to trigger the key without pressing another
         // as we have set then to
         // without triggering another key trough retro tap
         case LT(_SYM, KC_SPC):
             return -1;
         case RSFT_T(KC_BSPC):
+            return -1;
+        case LT(_NUM, KC_ENT):
+            return -1;
+        case LT(_NAV, KC_TAB):
             return -1;
         default:
             return TAPPING_TERM;
@@ -143,10 +127,14 @@ uint16_t get_tapping_term(uint16_t keycode, keyrecord_t *record) {
 // Define hold on other key press
 bool get_hold_on_other_key_press(uint16_t keycode, keyrecord_t *record) {
     switch (keycode) {
-        // only the "shift" keys have hold on to other key press enabled
+        // only the thumb layer keys have hold on to other key press enabled
         case LT(_SYM, KC_SPC):
             return true;
         case RSFT_T(KC_BSPC):
+            return true;
+        case LT(_NUM, KC_ENT):
+            return true;
+        case LT(_NAV, KC_TAB):
             return true;
         default:
             return false;
@@ -154,13 +142,9 @@ bool get_hold_on_other_key_press(uint16_t keycode, keyrecord_t *record) {
 };
 
 // Define combos
-const uint16_t PROGMEM quotes[] = {RCTL_T(KC_J), KC_U, COMBO_END};
-const uint16_t PROGMEM double_quotes[] = {RCTL_T(KC_F), KC_R, COMBO_END};
-const uint16_t PROGMEM game_layer[] = {KC_Q, KC_Z, KC_P, LT(_BASE, KC_SLSH), COMBO_END};
+const uint16_t PROGMEM game_layer[] = {KC_Q, KC_Z, KC_P, KC_SLSH, COMBO_END};
 const uint16_t PROGMEM base_layer[] = {KC_ESC, KC_TAB, KC_P, KC_SLSH, COMBO_END};
 combo_t key_combos[] = {
-    COMBO(quotes, KC_QUOT),
-    COMBO(double_quotes, KC_DQT),
     COMBO(game_layer, DF(_GAME)),
     COMBO(base_layer, DF(_BASE)),
 };
@@ -175,12 +159,13 @@ const key_override_t **key_overrides = (const key_override_t *[]){
 // LOGIC FOR IGNORING MOD-TAP KEYS WHEN TYPING
 
 // Decision macro for mod-tap keys to override
-
 #define IS_HOMEROW_MOD_TAP(kc) ( \
     IS_QK_MOD_TAP(kc) && \
     ((QK_MOD_TAP_GET_TAP_KEYCODE(kc) >= KC_A && \
       QK_MOD_TAP_GET_TAP_KEYCODE(kc) <= KC_Z) || \
-      QK_MOD_TAP_GET_TAP_KEYCODE(kc) == KC_COLN))
+     (QK_MOD_TAP_GET_TAP_KEYCODE(kc) >= KC_0 && \
+      QK_MOD_TAP_GET_TAP_KEYCODE(kc) <= KC_9) || \
+     QK_MOD_TAP_GET_TAP_KEYCODE(kc) == KC_COLN))
 
 // Decision macro for preceding trigger key and typing interval
 #define IS_TYPING(k) ( \
@@ -212,6 +197,11 @@ bool pre_process_record_user(uint16_t keycode, keyrecord_t *record) {
     return true;
 };
 
+// if nav and num layers are active, activate the mouse layer
+layer_state_t layer_state_set_user(layer_state_t state) {
+   return update_tri_layer_state(state, _NAV, _NUM, _MOUSE);
+};
+
 // Define keymaps
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
@@ -221,9 +211,9 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
         KC_Q,           KC_W,           KC_E,           KC_R,           KC_T,          KC_Y,    KC_U,           KC_I,           KC_O,           KC_P,
         LGUI_T(KC_A),   RALT_T(KC_S),   LSFT_T(KC_D),   RCTL_T(KC_F),   KC_G,          KC_H,    RCTL_T(KC_J),   RSFT_T(KC_K),   RALT_T(KC_L),   RGUI_T(KC_COLN),
-        KC_Z,           KC_X,           KC_C,           KC_V,           KC_B,          KC_N,    KC_M,           KC_COMM,        KC_DOT,         LT(_BASE, KC_SLSH),
+        KC_Z,           KC_X,           KC_C,           KC_V,           KC_B,          KC_N,    KC_M,           KC_COMM,        KC_DOT,         KC_SLSH,
 
-        LT(_MEDIA, KC_ESC), LT(_SYM, KC_SPC), LT(_NAV, KC_TAB),                     LT(_MOUSE, KC_ENT), RSFT_T(KC_BSPC), LT(_FUNC, KC_DEL)
+        LT(_MEDIA, KC_ESC), LT(_SYM, KC_SPC), LT(_NAV, KC_TAB),                     LT(_NUM, KC_ENT), RSFT_T(KC_BSPC), LT(_FUNC, KC_DEL)
 
     ),
 
@@ -237,6 +227,26 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
     ),
 
+    [_SYM] = LAYOUT_split_3x5_3(
+
+        XXXXXXX, KC_AT,   KC_HASH, KC_ASTR, KC_TILD,        KC_GRAVE, KC_CIRC,     KC_DLR,  KC_PERC, XXXXXXX,
+        KC_EXLM, KC_LCBR, KC_LBRC, KC_LPRN, KC_DQUO,        KC_QUOT,  KC_RPRN,     KC_RBRC, KC_RCBR, KC_EQUAL,
+        XXXXXXX, KC_PIPE, KC_AMPR, KC_PLUS, XXXXXXX,        XXXXXXX,  KC_MINUS,    KC_LABK, KC_RABK, KC_BSLS,
+
+        _______, _______, _______,                          _______,  M_BSPC_WORD, _______
+
+    ),
+
+    [_NUM] = LAYOUT_split_3x5_3(
+
+        XXXXXXX,      XXXXXXX,      KC_LPRN,      KC_ASTR,      XXXXXXX,        XXXXXXX, KC_CIRC,      KC_RPRN,      KC_EQUAL,     XXXXXXX,
+        LGUI_T(KC_1), RALT_T(KC_2), LSFT_T(KC_3), RCTL_T(KC_4), KC_5,           KC_6,    RCTL_T(KC_7), RSFT_T(KC_8), RALT_T(KC_9), RGUI_T(KC_0),
+        XXXXXXX,      XXXXXXX,      XXXXXXX,      KC_PLUS,      XXXXXXX,        XXXXXXX, KC_MINUS,     KC_COMM,      KC_DOT,       KC_SLSH,
+
+        _______,      _______,      _______,                                    _______, KC_DEL,       _______
+
+    ),
+
     [_MOUSE] = LAYOUT_split_3x5_3(
 
         XXXXXXX, KC_ACL2, KC_ACL1, KC_ACL0, XXXXXXX,        XXXXXXX, KC_WH_L, KC_MS_U, KC_WH_R, XXXXXXX,
@@ -244,16 +254,6 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         M_UNDO,  M_CUT,   M_COPY,  M_PASTE, XXXXXXX,        XXXXXXX, KC_WH_D, KC_WH_U, XXXXXXX, XXXXXXX,
 
         _______, _______, _______,                          _______, _______, _______
-
-    ),
-
-    [_SYM] = LAYOUT_split_3x5_3(
-
-        KC_TILD, KC_AT,   KC_HASH, KC_PERC, KC_PIPE,        KC_AMPR, KC_CIRC, KC_DLR,  KC_ASTR, KC_GRAVE,
-        KC_EXLM, KC_LCBR, KC_LBRC, KC_LPRN, KC_MINUS,       KC_PLUS, KC_RPRN, KC_RBRC, KC_RCBR, KC_EQUAL,
-        KC_1,    KC_2,    KC_3,    KC_4,    KC_5,           KC_6,    KC_7,    KC_8,    KC_9,    KC_0,
-
-        _______, _______, _______,                          _______, M_BSPC_WORD, _______
 
     ),
 
