@@ -141,6 +141,21 @@ bool get_hold_on_other_key_press(uint16_t keycode, keyrecord_t *record) {
     }
 };
 
+uint16_t get_quick_tap_term(uint16_t keycode, keyrecord_t *record) {
+    switch (keycode) {
+        // the only keys where we allow quick tap are the homerow mod tap keys
+        // on the right because they might be kept pressed in VIM
+        case RCTL_T(KC_J):
+            return QUICK_TAP_TERM;
+        case RSFT_T(KC_K):
+            return QUICK_TAP_TERM;
+        case RALT_T(KC_L):
+            return QUICK_TAP_TERM;
+        default:
+            return 0;
+    }
+};
+
 // Define combos
 const uint16_t PROGMEM game_layer[] = {KC_Q, KC_Z, KC_P, KC_SLSH, COMBO_END};
 const uint16_t PROGMEM base_layer[] = {KC_ESC, KC_TAB, KC_P, KC_SLSH, COMBO_END};
@@ -159,18 +174,110 @@ const key_override_t **key_overrides = (const key_override_t *[]){
 // LOGIC FOR IGNORING MOD-TAP KEYS WHEN TYPING
 
 // Decision macro for mod-tap keys to override
-#define IS_HOMEROW_MOD_TAP(kc) ( \
+#define IS_LEFT_HOMEROW_MOD_TAP(kc) ( \
     IS_QK_MOD_TAP(kc) && \
-    ((QK_MOD_TAP_GET_TAP_KEYCODE(kc) >= KC_A && \
-      QK_MOD_TAP_GET_TAP_KEYCODE(kc) <= KC_Z) || \
-     (QK_MOD_TAP_GET_TAP_KEYCODE(kc) >= KC_0 && \
-      QK_MOD_TAP_GET_TAP_KEYCODE(kc) <= KC_9) || \
-     QK_MOD_TAP_GET_TAP_KEYCODE(kc) == KC_COLN))
+    ( \
+        QK_MOD_TAP_GET_TAP_KEYCODE(kc) == KC_A || \
+        QK_MOD_TAP_GET_TAP_KEYCODE(kc) == KC_S || \
+        QK_MOD_TAP_GET_TAP_KEYCODE(kc) == KC_D || \
+        QK_MOD_TAP_GET_TAP_KEYCODE(kc) == KC_F || \
+        QK_MOD_TAP_GET_TAP_KEYCODE(kc) == KC_1 || \
+        QK_MOD_TAP_GET_TAP_KEYCODE(kc) == KC_2 || \
+        QK_MOD_TAP_GET_TAP_KEYCODE(kc) == KC_3 || \
+        QK_MOD_TAP_GET_TAP_KEYCODE(kc) == KC_4 \
+    ) \
+)
+
+#define IS_RIGHT_HOMEROW_MOD_TAP(kc) ( \
+    IS_QK_MOD_TAP(kc) && \
+    ( \
+        QK_MOD_TAP_GET_TAP_KEYCODE(kc) == KC_J || \
+        QK_MOD_TAP_GET_TAP_KEYCODE(kc) == KC_K || \
+        QK_MOD_TAP_GET_TAP_KEYCODE(kc) == KC_L || \
+        QK_MOD_TAP_GET_TAP_KEYCODE(kc) == KC_COLN || \
+        QK_MOD_TAP_GET_TAP_KEYCODE(kc) == KC_7 || \
+        QK_MOD_TAP_GET_TAP_KEYCODE(kc) == KC_8 || \
+        QK_MOD_TAP_GET_TAP_KEYCODE(kc) == KC_9 || \
+        QK_MOD_TAP_GET_TAP_KEYCODE(kc) == KC_0 \
+    ) \
+)
 
 // Decision macro for preceding trigger key and typing interval
-#define IS_TYPING(k) ( \
-    ((uint8_t)(k) <= KC_Z) && \
-    (last_input_activity_elapsed() < QUICK_TAP_TERM) \
+#define IS_TYPING_LEFT(k) ( \
+    (last_input_activity_elapsed() < PRIOR_IDLE) && \
+    ( \
+        (uint8_t)(k) == KC_Q || \
+        (uint8_t)(k) == KC_W || \
+        (uint8_t)(k) == KC_E || \
+        (uint8_t)(k) == KC_R || \
+        (uint8_t)(k) == KC_T || \
+        (uint8_t)(k) == KC_Y || \
+        (uint8_t)(k) == KC_U || \
+        (uint8_t)(k) == KC_I || \
+        (uint8_t)(k) == KC_O || \
+        (uint8_t)(k) == KC_P || \
+        (uint8_t)(k) == KC_G || \
+        (uint8_t)(k) == KC_H || \
+        (uint8_t)(k) == KC_J || \
+        (uint8_t)(k) == KC_K || \
+        (uint8_t)(k) == KC_L || \
+        (uint8_t)(k) == KC_COLN || \
+        (uint8_t)(k) == KC_Z || \
+        (uint8_t)(k) == KC_X || \
+        (uint8_t)(k) == KC_C || \
+        (uint8_t)(k) == KC_V || \
+        (uint8_t)(k) == KC_B || \
+        (uint8_t)(k) == KC_N || \
+        (uint8_t)(k) == KC_M || \
+        (uint8_t)(k) == KC_COMM || \
+        (uint8_t)(k) == KC_DOT || \
+        (uint8_t)(k) == KC_SLSH || \
+        (uint8_t)(k) == KC_5 || \
+        (uint8_t)(k) == KC_6 || \
+        (uint8_t)(k) == KC_7 || \
+        (uint8_t)(k) == KC_8 || \
+        (uint8_t)(k) == KC_9 || \
+        (uint8_t)(k) == KC_0 \
+    ) \
+)
+
+// Decision macro for preceding trigger key and typing interval
+#define IS_TYPING_RIGHT(k) ( \
+    (last_input_activity_elapsed() < PRIOR_IDLE) && \
+    ( \
+        (uint8_t)(k) == KC_Q || \
+        (uint8_t)(k) == KC_W || \
+        (uint8_t)(k) == KC_E || \
+        (uint8_t)(k) == KC_R || \
+        (uint8_t)(k) == KC_T || \
+        (uint8_t)(k) == KC_Y || \
+        (uint8_t)(k) == KC_U || \
+        (uint8_t)(k) == KC_I || \
+        (uint8_t)(k) == KC_O || \
+        (uint8_t)(k) == KC_P || \
+        (uint8_t)(k) == KC_A || \
+        (uint8_t)(k) == KC_S || \
+        (uint8_t)(k) == KC_D || \
+        (uint8_t)(k) == KC_F || \
+        (uint8_t)(k) == KC_G || \
+        (uint8_t)(k) == KC_H || \
+        (uint8_t)(k) == KC_Z || \
+        (uint8_t)(k) == KC_X || \
+        (uint8_t)(k) == KC_C || \
+        (uint8_t)(k) == KC_V || \
+        (uint8_t)(k) == KC_B || \
+        (uint8_t)(k) == KC_N || \
+        (uint8_t)(k) == KC_M || \
+        (uint8_t)(k) == KC_COMM || \
+        (uint8_t)(k) == KC_DOT || \
+        (uint8_t)(k) == KC_SLSH || \
+        (uint8_t)(k) == KC_1 || \
+        (uint8_t)(k) == KC_2 || \
+        (uint8_t)(k) == KC_3 || \
+        (uint8_t)(k) == KC_4 || \
+        (uint8_t)(k) == KC_5 || \
+        (uint8_t)(k) == KC_6 \
+    ) \
 )
 
 bool pre_process_record_user(uint16_t keycode, keyrecord_t *record) {
@@ -180,7 +287,11 @@ bool pre_process_record_user(uint16_t keycode, keyrecord_t *record) {
 
     if (record->event.pressed) {
         // Press the tap keycode if the tap-hold key follows the previous key swiftly
-        if (IS_HOMEROW_MOD_TAP(keycode) && IS_TYPING(prev_keycode)) {
+        if (IS_LEFT_HOMEROW_MOD_TAP(keycode) && IS_TYPING_LEFT(prev_keycode)) {
+            is_pressed[tap_keycode] = true;
+            record->keycode = tap_keycode;
+        }
+        if (IS_RIGHT_HOMEROW_MOD_TAP(keycode) && IS_TYPING_RIGHT(prev_keycode)) {
             is_pressed[tap_keycode] = true;
             record->keycode = tap_keycode;
         }
@@ -195,11 +306,33 @@ bool pre_process_record_user(uint16_t keycode, keyrecord_t *record) {
     }
 
     return true;
+
 };
 
-// if nav and num layers are active, activate the mouse layer
+uint8_t is_base_layer_active = 1;
+
+void keyboard_post_init_user(void) {
+    rgblight_enable_noeeprom();
+    rgblight_sethsv_noeeprom(152, 232, 200);
+};
+
+//update when default layer changes
+layer_state_t default_layer_state_set_user(layer_state_t state) {
+    switch(biton32(state)) {
+        case _BASE:
+            rgblight_sethsv_noeeprom(152, 232, 200);
+            break;
+        default:
+            rgblight_sethsv_noeeprom(0, 255, 200);
+            break;
+    };
+    return state;
+};
+
 layer_state_t layer_state_set_user(layer_state_t state) {
-   return update_tri_layer_state(state, _NAV, _NUM, _MOUSE);
+    // if nav and num layers are active, activate the mouse layer
+    state = update_tri_layer_state(state, _NAV, _NUM, _MOUSE);
+    return state;
 };
 
 // Define keymaps
@@ -229,19 +362,19 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
     [_SYM] = LAYOUT_split_3x5_3(
 
-        XXXXXXX, KC_AT,   KC_HASH, KC_ASTR, KC_TILD,        KC_GRAVE, KC_CIRC,     KC_DLR,  KC_PERC, XXXXXXX,
-        KC_EXLM, KC_LCBR, KC_LBRC, KC_LPRN, KC_DQUO,        KC_QUOT,  KC_RPRN,     KC_RBRC, KC_RCBR, KC_EQUAL,
-        XXXXXXX, KC_PIPE, KC_AMPR, KC_PLUS, XXXXXXX,        XXXXXXX,  KC_MINUS,    KC_LABK, KC_RABK, KC_BSLS,
+        XXXXXXX,  KC_AT,   KC_HASH, KC_ASTR,  KC_PIPE,        KC_AMPR, KC_CIRC,     KC_DLR,  KC_PERC, XXXXXXX,
+        KC_GRAVE, KC_LBRC, KC_LPRN, KC_RPRN,  KC_RBRC,        KC_TILD,  KC_LCBR,     KC_RCBR, KC_DQUO, KC_QUOT,
+        XXXXXXX,  KC_BSLS, KC_PLUS, KC_MINUS, XXXXXXX,        XXXXXXX,  KC_EQUAL,    KC_LABK, KC_RABK, KC_EXLM,
 
-        _______, _______, _______,                          _______,  M_BSPC_WORD, _______
+        _______,  _______, _______,                          _______,  M_BSPC_WORD, _______
 
     ),
 
     [_NUM] = LAYOUT_split_3x5_3(
 
-        XXXXXXX,      XXXXXXX,      KC_LPRN,      KC_ASTR,      XXXXXXX,        XXXXXXX, KC_CIRC,      KC_RPRN,      KC_EQUAL,     XXXXXXX,
+        XXXXXXX,      KC_LPRN,      KC_RPRN,      KC_ASTR,      KC_RPRN,        XXXXXXX, KC_CIRC,      KC_COLN,      KC_PERC,      XXXXXXX,
         LGUI_T(KC_1), RALT_T(KC_2), LSFT_T(KC_3), RCTL_T(KC_4), KC_5,           KC_6,    RCTL_T(KC_7), RSFT_T(KC_8), RALT_T(KC_9), RGUI_T(KC_0),
-        XXXXXXX,      XXXXXXX,      XXXXXXX,      KC_PLUS,      XXXXXXX,        XXXXXXX, KC_MINUS,     KC_COMM,      KC_DOT,       KC_SLSH,
+        XXXXXXX,      KC_GRAVE,     KC_PLUS,      KC_MINUS,     XXXXXXX,        XXXXXXX, KC_EQUAL,     KC_COMM,      KC_DOT,       KC_SLSH,
 
         _______,      _______,      _______,                                    _______, KC_DEL,       _______
 
