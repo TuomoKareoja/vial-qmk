@@ -356,17 +356,17 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         KC_LGUI, KC_RALT,     KC_LSFT,     KC_RCTL,    XXXXXXX,             KC_LEFT, KC_DOWN,  KC_UP,   KC_RGHT,  KC_APP,
         M_UNDO,  M_CUT,       M_COPY,      M_PASTE,    XXXXXXX,             XXXXXXX, KC_PGDN,  KC_PGUP, XXXXXXX,  XXXXXXX,
 
-        _______, _______,     _______,                                      _______, _______,  _______
+        _______, _______,     _______,                                      _______,  KC_BSPC,  KC_DEL
 
     ),
 
     [_SYM] = LAYOUT_split_3x5_3(
 
-        XXXXXXX,  KC_AT,   KC_HASH, KC_ASTR,  KC_PIPE,        KC_AMPR, KC_CIRC,     KC_DLR,  KC_PERC, XXXXXXX,
-        KC_GRAVE, KC_LBRC, KC_LPRN, KC_RPRN,  KC_RBRC,        KC_TILD,  KC_LCBR,     KC_RCBR, KC_DQUO, KC_QUOT,
+        XXXXXXX,  KC_AT,   KC_HASH, KC_ASTR,  KC_PIPE,        KC_AMPR,  KC_CIRC,     KC_DLR,  KC_PERC, XXXXXXX,
+        KC_GRAVE, KC_LBRC, KC_LPRN, KC_RPRN,  KC_RBRC,        KC_TILD,  KC_RCBR,     KC_LCBR, KC_DQUO, KC_QUOT,
         XXXXXXX,  KC_BSLS, KC_PLUS, KC_MINUS, XXXXXXX,        XXXXXXX,  KC_EQUAL,    KC_LABK, KC_RABK, KC_EXLM,
 
-        _______,  _______, _______,                          _______,  M_BSPC_WORD, _______
+        _______,  _______, _______,                           KC_ENT,   M_BSPC_WORD, KC_DEL
 
     ),
 
@@ -374,16 +374,16 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
         XXXXXXX,      KC_LPRN,      KC_RPRN,      KC_ASTR,      KC_RPRN,        XXXXXXX, KC_CIRC,      KC_COLN,      KC_PERC,      XXXXXXX,
         LGUI_T(KC_1), RALT_T(KC_2), LSFT_T(KC_3), RCTL_T(KC_4), KC_5,           KC_6,    RCTL_T(KC_7), RSFT_T(KC_8), RALT_T(KC_9), RGUI_T(KC_0),
-        XXXXXXX,      KC_GRAVE,     KC_PLUS,      KC_MINUS,     XXXXXXX,        XXXXXXX, KC_EQUAL,     KC_COMM,      KC_DOT,       KC_SLSH,
+        XXXXXXX,      KC_BSLS,      KC_PLUS,      KC_MINUS,     XXXXXXX,        XXXXXXX, KC_EQUAL,     KC_COMM,      KC_DOT,       KC_SLSH,
 
-        _______,      _______,      _______,                                    _______, KC_DEL,       _______
+        KC_ESC,       KC_SPC,       _______,                                    _______, _______,      _______
 
     ),
 
     [_MOUSE] = LAYOUT_split_3x5_3(
 
         XXXXXXX, KC_ACL2, KC_ACL1, KC_ACL0, XXXXXXX,        XXXXXXX, KC_WH_L, KC_MS_U, KC_WH_R, XXXXXXX,
-        KC_BTN4, KC_BTN3, KC_BTN2, KC_BTN1, XXXXXXX,        XXXXXXX, KC_MS_L, KC_MS_D, KC_MS_R, XXXXXXX,
+        KC_RCTL, KC_BTN3, KC_BTN2, KC_BTN1, XXXXXXX,        XXXXXXX, KC_MS_L, KC_MS_D, KC_MS_R, XXXXXXX,
         M_UNDO,  M_CUT,   M_COPY,  M_PASTE, XXXXXXX,        XXXXXXX, KC_WH_D, KC_WH_U, XXXXXXX, XXXXXXX,
 
         _______, _______, _______,                          _______, _______, _______
@@ -392,11 +392,11 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
     [_FUNC] = LAYOUT_split_3x5_3(
 
-        KC_F10,  KC_F7,   KC_F8,    KC_F9, XXXXXXX,      XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,
-        KC_F11,   KC_F4,   KC_F5,   KC_F6, XXXXXXX,      XXXXXXX, KC_RCTL, KC_RSFT, KC_RALT, KC_RGUI,
-        KC_F12,   KC_F1,   KC_2,    KC_3,  XXXXXXX,      XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,
+        KC_F10,  KC_F7,   KC_F8,   KC_F9, XXXXXXX,      XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,
+        KC_F11,  KC_F4,   KC_F5,   KC_F6, XXXXXXX,      XXXXXXX, KC_RCTL, KC_RSFT, KC_RALT, KC_RGUI,
+        KC_F12,  KC_F1,   KC_2,    KC_3,  XXXXXXX,      XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,
 
-        _______, _______, _______,                       _______, _______, _______
+        KC_ESC,  KC_SPC,  KC_TAB,                       _______, _______, _______
 
     ),
 
@@ -422,7 +422,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
     [_GAMESWAP] = LAYOUT_split_3x5_3(
 
-        XXXXXXX, KC_1, KC_2, KC_3, XXXXXXX,        XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,
+        KC_F9,   KC_1, KC_2, KC_3, KC_F5,            XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,
         XXXXXXX, KC_4, KC_5, KC_6, KC_0,           XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,
         XXXXXXX, KC_7, KC_8, KC_9, XXXXXXX,        XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,
 
