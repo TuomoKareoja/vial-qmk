@@ -24,6 +24,7 @@ enum custom_keycodes {
     M_BSPC_WORD,
     M_DEL_LINE,
     M_DEL_WORD,
+    M_CLOSE_WINDOW,
 };
 
 // Define macros for keycodes and other overrides
@@ -83,7 +84,16 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
                 SEND_STRING(SS_RCTL(SS_TAP(X_DEL)));
             }
             break;
-       // modify the behaviour of the l_gui key to put out the right tap code
+        case M_CLOSE_WINDOW:
+            if (record->event.pressed) {
+                register_code(KC_RALT);
+                register_code(KC_ESC);
+            } else {
+                unregister_code(KC_ESC);
+                unregister_code(KC_RALT);
+            }
+            break;
+        // modify the behaviour of the l_gui key to put out the right tap code
         case RGUI_T(KC_COLN):
             if (record->event.pressed) {
                 if (mod_state && MOD_MASK_SHIFT) {
@@ -352,7 +362,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
     [_NAV] = LAYOUT_split_3x5_3(
 
-        XXXXXXX, M_BSPC_LINE, M_BSPC_WORD, M_DEL_WORD, M_DEL_LINE,          KC_PSCR, KC_HOME,  KC_END,  XXXXXXX,  XXXXXXX,
+        XXXXXXX, M_BSPC_LINE, M_BSPC_WORD, M_DEL_WORD, M_DEL_LINE,          KC_PSCR, KC_HOME,  KC_END,  XXXXXXX,  M_CLOSE_WINDOW,
         KC_LGUI, KC_RALT,     KC_LSFT,     KC_RCTL,    XXXXXXX,             KC_LEFT, KC_DOWN,  KC_UP,   KC_RGHT,  KC_APP,
         M_UNDO,  M_CUT,       M_COPY,      M_PASTE,    XXXXXXX,             XXXXXXX, KC_PGDN,  KC_PGUP, XXXXXXX,  XXXXXXX,
 
