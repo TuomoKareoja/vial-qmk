@@ -86,11 +86,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             break;
         case M_CLOSE_WINDOW:
             if (record->event.pressed) {
-                register_code(KC_RALT);
-                register_code(KC_ESC);
-            } else {
-                unregister_code(KC_ESC);
-                unregister_code(KC_RALT);
+                SEND_STRING(SS_RALT(SS_TAP(X_F4)));
             }
             break;
         // modify the behaviour of the l_gui key to put out the right tap code
@@ -423,7 +419,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [_GAME] = LAYOUT_split_3x5_3(
 
         KC_ESC,  KC_Q,   KC_W,    KC_E, KC_R,        KC_Y,    KC_U,    KC_I,    KC_O,    KC_P,
-        KC_LGUI, KC_A,   KC_S,    KC_D, KC_F,        KC_MPRV, KC_VOLD, KC_VOLU, KC_MNXT, KC_MUTE,
+        KC_LSFT, KC_A,   KC_S,    KC_D, KC_F,        KC_MPRV, KC_VOLD, KC_VOLU, KC_MNXT, KC_MUTE,
         KC_TAB,  KC_Z,   KC_X,    KC_C, KC_V,        KC_N,    KC_M,    KC_COMM, KC_DOT,  KC_SLSH,
 
         OSL(_GAMESWAP), KC_SPC, KC_RCTL,             XXXXXXX, KC_MPLY, XXXXXXX
@@ -433,10 +429,10 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [_GAMESWAP] = LAYOUT_split_3x5_3(
 
         KC_F9,   KC_1, KC_2, KC_3, KC_F5,            XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,
-        XXXXXXX, KC_4, KC_5, KC_6, KC_0,           XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,
-        XXXXXXX, KC_7, KC_8, KC_9, XXXXXXX,        XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,
+        XXXXXXX, KC_4, KC_5, KC_6, KC_0,             XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,
+        XXXXXXX, KC_7, KC_8, KC_9, XXXXXXX,          XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,
 
-        _______, _______, _______,                 XXXXXXX, XXXXXXX, XXXXXXX
+        _______, _______, _______,                   XXXXXXX, XXXXXXX, XXXXXXX
 
     ),
 
